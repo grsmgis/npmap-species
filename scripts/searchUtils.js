@@ -23,7 +23,7 @@ function loadResource(url, callback) {
 
 var can_populate = false;
 function prepareSearchTool() {
-  var atbi = 'https://github.com/grsmgis/npmap-species/tree/gh-pages/atbirecords/';
+  var atbi = 'https://grsmgis.github.io/npmap-species/atbirecords/';
 
   var auc = loadResource(atbi + 'species_auc.json', function (data) {
     control._aucValues = data;
