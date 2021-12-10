@@ -43,7 +43,7 @@ window.onload = function () {
         NPMap.config.L.removeLayer(overlay.L);
       }
     }
-
+    document.body.style.visibility = 'visible';
     return true;
   });
 
