@@ -64,12 +64,12 @@
         </select>-->
         <div id='selector-container' class='selector-container'>
           <div id="options-selectbackground-dropdown" class="atlas-selector-dropdown" data-position="left"
-            onkeypress="toggleSelectBackgroundList();" onclick="toggleSelectBackgroundList();" style="z-index: 50;" tabindex="0" onblur="toggleSelectBackgroundList(false)">
+            onkeypress="toggleSelectBackgroundList();" onclick="toggleSelectBackgroundList();" style="z-index: 50;" tabindex="0">
             Species Mapper
             <div class="atlas-selector-triangle triangle"></div>
             <ul id="options-selectbackground-dropdown-ul" style="display: none;">
               <li>✔ Species Mapper</li>
-              <li><a href="#" id="environMapperLink" class="select-atlas-link">Enviromapper</a></li>
+              <li onclick="console.log('test')"><a href="#" id="environMapperLink" class="select-atlas-link">Enviromapper</a></li>
             </ul>
           </div>
           <div id='viewing-option-text' class='view-as-text'>
