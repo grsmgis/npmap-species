@@ -1437,16 +1437,11 @@ var group_name_convention = 'common';
 var last_grp = undefined;
 var last_sub = undefined;
 function populateSpeciesSelect(grp_id, subgrp_id) {
-  $('#dropdown-grp1-input').val("").css({ backgroundColor: '#40403d' });
-  $('#dropdown-grp2-input').val("").css({ backgroundColor: '#40403d' });
-  $('#dropdown-grp3-input').val("").css({ backgroundColor: '#40403d' });
+
 
   $('#search-compare-grp1-dropdown-select').empty();
-  $('#search-compare-grp1-dropdown').css({ backgroundColor: '#40403d' });
   $('#search-compare-grp2-dropdown-select').empty();
-  $('#search-compare-grp2-dropdown').css({ backgroundColor: '#40403d' });
   $('#search-compare-grp3-dropdown-select').empty();
-  $('#search-compare-grp3-dropdown').css({ backgroundColor: '#40403d' });
 
   if (!group_mappings[grp_id]) return;
   let clearBinds1 = `onkeypress='clearSpeciesSelect(1)' onclick='clearSpeciesSelect(1)'`;
@@ -1477,35 +1472,7 @@ function populateSpeciesSelect(grp_id, subgrp_id) {
 function toggleNameGroup() {
   group_name_convention === 'common' ? group_name_convention = 'latin' : group_name_convention = 'common';
   if (!last_sub || !last_grp) return;
-  clearSpeciesSelect();
   populateSpeciesSelect(last_grp, last_sub);
-  $('#search-compare-gv-contents').css({ visibility: 'inherit' }); 
-  const id = 2;
-
-  if (control._selectedSpecies[id] !== undefined && control._selectedSpecies[id].visible) {
-    recordAction('removed species', control._selectedSpecies[id]._latin.replace(/_/g, ' '));
-
-    if (showPredicted) {
-      NPMap.config.L.removeLayer(control._selectedSpecies[id].predicted);
-    }
-
-    if (showObserved) {
-      NPMap.config.L.removeLayer(control._selectedSpecies[id].observed);
-    }
-  }
-
-  let grp_name = last_grp;
-  let sgrp_name = last_sub;
-  let specid = 'grp';
-  control._selectedSpecies[id] = {};
-  control._selectedSpecies[id]._id = specid;
-  control._selectedSpecies[id]._latin = grp_name;
-  control._selectedSpecies[id]._common = sgrp_name;
-  control._selectedSpecies[id].visible = true;
-  $('#legend-species-blue').addClass('populated');
-  $('#legend-blue-contents-name').html('Group Map');
-
-  drawData();
   return;
 }
 
