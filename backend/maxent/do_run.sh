@@ -17,10 +17,12 @@ JOBID_FILE=current_eden_job.txt
 TOOL_DIR=/app/npmap-species/backend/maxent
 MAXENT_JAR=$TOOL_DIR/maxent.jar
 CONFIG_FILE=/app/npmap-species/twincreekscode/maxent_config/config_full.txt
-if [[ -z "${CONFIG_ENV}" ]]; then
-	CONFIG_FILE=/app/npmap-species/twincreekscode/maxent_config/config_full.txt
-else
+if [ -f /app/data/config.txt]; then
+	echo "using custom config"
 	CONFIG_FILE=/app/data/config.txt
+else
+	echo "using full config"
+	CONFIG_FILE=/app/npmap-species/twincreekscode/maxent_config/config_full.txt
 fi
 CV_NUM_FOLDS=$(head $CONFIG_FILE -n 1)
 CV=true
