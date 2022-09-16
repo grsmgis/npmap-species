@@ -25,8 +25,8 @@ perms="chmod 755"
 mkdir $geotiff_dir/out
 mkdir -p $outtile_dir
 
-rm $geotiff_dir/*.asc
-rm $geotiff_dir/*.tif.aux.xml
+rm -f $geotiff_dir/*.asc
+rm -f $geotiff_dir/*.tif.aux.xml
 
 echo "#!/bin/bash" > $uploadcmnds
 
