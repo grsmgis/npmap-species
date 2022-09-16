@@ -17,7 +17,7 @@ JOBID_FILE=current_eden_job.txt
 TOOL_DIR=/app/npmap-species/backend/maxent
 MAXENT_JAR=$TOOL_DIR/maxent.jar
 CONFIG_FILE=/app/npmap-species/twincreekscode/maxent_config/config_full.txt
-if [ -f /app/data/config.txt]; then
+if [ -f /app/data/config.txt ]; then
 	echo "using custom config"
 	CONFIG_FILE=/app/data/config.txt
 else
