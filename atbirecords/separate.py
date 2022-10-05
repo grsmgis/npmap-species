@@ -913,8 +913,11 @@ def separate():
         name = line.split(',')[0]
         if name not in mappings:
             continue
+        #response = urllib.request.urlopen('https://carto.nps.gov/user/nps-grsm/api/v2/sql?&filename=' + name +
+        #                                  '&format=csv&q=SELECT+DISTINCT+ON+(the_geom)+*+FROM+grsm_species_observations_maxent+WHERE+lower(genus_speciesmaxent)=lower(%27' + name + '%27)',
+        #                                  context=gcontext)
         response = urllib.request.urlopen('https://carto.nps.gov/user/nps-grsm/api/v2/sql?&filename=' + name +
-                                          '&format=csv&q=SELECT+DISTINCT+ON+(the_geom)+*+FROM+grsm_species_observations_maxent+WHERE+lower(genus_speciesmaxent)=lower(%27' + name + '%27)',
+                                          '&format=csv&q=SELECT+DISTINCT+ON+(the_geom)+*+FROM+grsm_species_observations_maxent_2022+WHERE+lower(sciname)=lower(%27' + name + '%27)',
                                           context=gcontext)
         contents = str(response.read().decode())
         contents = contents.replace('"', '')
