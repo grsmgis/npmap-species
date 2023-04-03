@@ -6,6 +6,7 @@ import csv
 import urllib.request
 import urllib.error
 import urllib.parse
+import requests
 
 
 """
@@ -894,13 +895,57 @@ mappings = {
   "Zenaida_macroura": "41807",
 }
 
+gcontext = ssl.SSLContext()
+
+def get_species(name, renames={}):
+    response = urllib.request.urlopen('https://carto.nps.gov/user/nps-grsm/api/v2/sql?&filename=' + name +
+        '&format=csv&q=SELECT+DISTINCT+ON+(the_geom)+*+FROM+table_20230303extract+WHERE+lower(genus_speciesmaxent)=lower(%27' + name + '%27)',
+        context=gcontext)
+    contents = response.read().decode('utf-8')
+    reader = csv.DictReader(contents.splitlines())
+    
+    def rename(name):
+        return renames[name] if name in renames else name
+    reader.fieldnames = list(map(rename, reader.fieldnames))
+    return reader
+
+def write_atbi_file(name, files_dir='./ATBI_files/', count_filename='./ATBI_counts.txt', JUST_COORDS=JUST_COORDS):
+    os.makedirs(os.path.dirname(files_dir), exist_ok=True)
+
+    reader = get_species(name, renames={'longitude': 'lon','latitude': 'lat',})
+    fields = ['genus_speciesmaxent','genus_speciesirma','grsm_speciesid','commonname','taxagroup','subjectcategory','lon','lat']
+    
+    if not set(fields).issubset(reader.fieldnames):
+        raise Exception(f'Error: returned data does not contain the correct fields. \nGot: {",".join(reader.fieldnames)} \nExpected: {",".join(fields)}')
+
+    counts = 0
+    speciesID = None
+    useFields = fields if not JUST_COORDS else ['genus_speciesmaxent','lon','lat']
+    with open(f'{files_dir}/{name}.csv', 'w') as f:
+        writer = csv.DictWriter(f, delimiter=',', fieldnames=useFields)
+        writer.writeheader()
+    
+        for row in reader:
+            if float(row['lat']) == 0.0 or float(row['lon']) == 0:
+                continue
+            counts += 1
+            speciesID = row['grsm_speciesid']
+            r = dict((k, row[k]) for k in useFields)
+            writer.writerow(r)
+
+    if counts >= 30:
+        with open(count_filename, 'a+') as count_file:
+            count_file.write(','.join([name, str(counts), speciesID]) + '\n')
+        
+
+
 def separate():
     # Create directory for individual species files
     files_dir = 'ATBI_files'
     os.mkdir(files_dir)
     count_file = open('ATBI_counts.txt', 'w')
 
-    gcontext = ssl.SSLContext()
+    
     # get counts
     response = urllib.request.urlopen(
         'https://carto.nps.gov/user/nps-grsm/api/v2/sql?&filename=Unique_Species&format=csv&q=SELECT+DISTINCT+ON+(genus_speciesmaxent)+genus_speciesmaxent+,count(genus_speciesmaxent)+as+count+FROM+grsm_species_observations_maxent+group+by+genus_speciesmaxent+having+count(genus_speciesmaxent)+%3E+29',
@@ -942,4 +987,5 @@ def separate():
 
 
 if __name__ == "__main__":
-    separate()
+    write_atbi_file('Abaeis_nicippe')
+    #separate()
