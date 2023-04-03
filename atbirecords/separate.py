@@ -897,10 +897,8 @@ mappings = {
 
 gcontext = ssl.SSLContext()
 
-def get_species(name, renames={}):
-    response = urllib.request.urlopen('https://carto.nps.gov/user/nps-grsm/api/v2/sql?&filename=' + name +
-        '&format=csv&q=SELECT+DISTINCT+ON+(the_geom)+*+FROM+table_20230303extract+WHERE+lower(genus_speciesmaxent)=lower(%27' + name + '%27)',
-        context=gcontext)
+def get_csv(url, renames={}):
+    response = urllib.request.urlopen(url, context=gcontext)
     contents = response.read().decode('utf-8')
     reader = csv.DictReader(contents.splitlines())
     
@@ -912,7 +910,8 @@ def get_species(name, renames={}):
 def write_atbi_file(name, files_dir='./ATBI_files/', count_filename='./ATBI_counts.txt', JUST_COORDS=JUST_COORDS):
     os.makedirs(os.path.dirname(files_dir), exist_ok=True)
 
-    reader = get_species(name, renames={'longitude': 'lon','latitude': 'lat',})
+    url = 'https://carto.nps.gov/user/nps-grsm/api/v2/sql?&filename=' + name + '&format=csv&q=SELECT+DISTINCT+ON+(the_geom)+*+FROM+table_20230303extract+WHERE+lower(genus_speciesmaxent)=lower(%27' + name + '%27)'
+    reader = get_csv(url, renames={'longitude': 'lon','latitude': 'lat',})
     fields = ['genus_speciesmaxent','genus_speciesirma','grsm_speciesid','commonname','taxagroup','subjectcategory','lon','lat']
     
     if not set(fields).issubset(reader.fieldnames):
@@ -937,9 +936,24 @@ def write_atbi_file(name, files_dir='./ATBI_files/', count_filename='./ATBI_coun
         with open(count_filename, 'a+') as count_file:
             count_file.write(','.join([name, str(counts), speciesID]) + '\n')
         
-
-
 def separate():
+    files_dir = './ATBI_files/'
+    os.makedirs(files_dir, exist_ok=True)
+    count_filename='./ATBI_counts.txt'
+    open(count_filename, 'w').close() #touch
+
+    reader = get_csv('https://carto.nps.gov/user/nps-grsm/api/v2/sql?&filename=Unique_Species&format=csv&q=SELECT+DISTINCT+ON+(genus_speciesmaxent)+genus_speciesmaxent+,count(genus_speciesmaxent)+as+count+FROM+grsm_species_observations_maxent+group+by+genus_speciesmaxent+having+count(genus_speciesmaxent)+%3E+29')
+    
+    nameCol = 'genus_speciesmaxent'
+    for row in reader:
+        name = row[nameCol]
+        if name not in mappings:
+            continue
+    
+        write_atbi_file(name)
+
+
+def _separate():
     # Create directory for individual species files
     files_dir = 'ATBI_files'
     os.mkdir(files_dir)
@@ -987,5 +1001,4 @@ def separate():
 
 
 if __name__ == "__main__":
-    write_atbi_file('Abaeis_nicippe')
-    #separate()
+    separate()
