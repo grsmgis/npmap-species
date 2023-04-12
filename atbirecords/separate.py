@@ -925,7 +925,7 @@ def write_atbi_file(name, files_dir='./ATBI_files/', count_filename='./ATBI_coun
         writer.writeheader()
     
         for row in reader:
-            if float(row['lat']) == 0.0 or float(row['lon']) == 0:
+            if row['lat'] == '' or float(row['lat']) == 0.0 or row['lon'] == '' or float(row['lon']) == 0:
                 continue
             counts += 1
             speciesID = row['grsm_speciesid']
