@@ -897,6 +897,12 @@ mappings = {
 
 gcontext = ssl.SSLContext()
 
+def get_config():
+    #with open('/app/data/config.txt') as f:
+    with open('/mnt/seenas2/data/nps-ENVIRONMENTS/config.txt') as f:
+        next(f)
+        return list(map(lambda x: x.strip(), f.readlines()))
+
 def get_csv(url, renames={}):
     response = urllib.request.urlopen(url, context=gcontext)
     contents = response.read().decode('utf-8')
@@ -943,11 +949,12 @@ def separate():
     open(count_filename, 'w').close() #touch
 
     reader = get_csv('https://carto.nps.gov/user/nps-grsm/api/v2/sql?&filename=Unique_Species&format=csv&q=SELECT+DISTINCT+ON+(genus_speciesmaxent)+genus_speciesmaxent+,count(genus_speciesmaxent)+as+count+FROM+grsm_species_observations_maxent+group+by+genus_speciesmaxent+having+count(genus_speciesmaxent)+%3E+29')
-    
+    configs = get_config()
+
     nameCol = 'genus_speciesmaxent'
     for row in reader:
         name = row[nameCol]
-        if name not in mappings:
+        if name not in mappings or name not in configs:
             continue
     
         write_atbi_file(name)
