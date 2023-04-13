@@ -112,6 +112,7 @@ if test $CV = true; then
 	export GEOTIFF_DIR=$GEOTIFF_DIR
 	export ACCOUNT=$ACCOUNT
 	export CV_NUM_FOLDS=$CV_NUM_FOLDS
+	export COUNTS_FILE=$COUNTS_FILE
 
 	" > postprocess.sh
 
