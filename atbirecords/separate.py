@@ -898,8 +898,7 @@ mappings = {
 gcontext = ssl.SSLContext()
 
 def get_config():
-    #with open('/app/data/config.txt') as f:
-    with open('/mnt/seenas2/data/nps-ENVIRONMENTS/config.txt') as f:
+    with open('/app/data/config.txt') as f:
         next(f)
         return list(map(lambda x: x.strip(), f.readlines()))
 
