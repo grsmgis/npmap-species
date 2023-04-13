@@ -6,7 +6,7 @@ import csv
 import urllib.request
 import urllib.error
 import urllib.parse
-import requests
+from os.path import exists
 
 
 """
@@ -898,9 +898,13 @@ mappings = {
 gcontext = ssl.SSLContext()
 
 def get_config():
-    with open('/app/data/config.txt') as f:
-        next(f)
-        return list(map(lambda x: x.strip(), f.readlines()))
+    path = '/app/data/config.txt'
+    if exists(path):
+        with open(path) as f:
+            next(f)
+            return list(map(lambda x: x.strip(), f.readlines()))
+    else: 
+        return list(mappings.keys())
 
 def get_csv(url, renames={}):
     response = urllib.request.urlopen(url, context=gcontext)
