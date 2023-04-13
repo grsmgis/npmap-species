@@ -10,11 +10,7 @@ mkdir $GEOTIFF_DIR
 input_dir=$RUN_DIR/maxent_results
 
 # Make command list for running aggregate.sh on each species.
-i=-1
-while read line; do
-   i=$(($i + 1))
-   # Skip first line
-   if test $i -eq 0; then continue; fi
+cut -d ',' -f1 $COUNTS_FILE | while read line; do
    species=$line
    aggregate_cmd="cd $RUN_DIR; export TOOL_DIR=$TOOL_DIR; export CV_NUM_FOLDS=$CV_NUM_FOLDS; $TOOL_DIR/aggregate.sh $species"
    bov2asc_cmd="$TOOL_DIR/bov2asc $input_dir/$species/${species}_avg > $input_dir/$species/${species}_avg.asc"
@@ -23,7 +19,7 @@ while read line; do
    gdaldem_cmd_pink="$GDAL_BIN/gdaldem color-relief -alpha $GEOTIFF_DIR/$species.tif $TOOL_DIR/color_ramp_pink.txt $GEOTIFF_DIR/${species}@pink.tif"
    gdaldem_cmd_orange="$GDAL_BIN/gdaldem color-relief -alpha $GEOTIFF_DIR/$species.tif $TOOL_DIR/color_ramp_orange.txt $GEOTIFF_DIR/${species}@orange.tif"
    echo "$aggregate_cmd && $bov2asc_cmd && $gdal_translate_cmd && $gdaldem_cmd_blue; $gdaldem_cmd_pink; $gdaldem_cmd_orange" >> eden_aggregate/commands
-done < $CONFIG_FILE
+done
 
 # Make PBS header file for eden run
 echo -n "#!/bin/sh
