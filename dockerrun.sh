@@ -23,7 +23,7 @@ cd /app/npmap-species/backend/maxent/eden_folds/ && . commands
 
 cd /app/npmap-species/backend/maxent/eden_maxent/ && parallel < commands
 
-cd /app/npmap-species/backend/maxent/eden_aggregate/ && source /app/npmap-species/backend/maxent/eden_aggregate/commands
+cd /app/npmap-species/backend/maxent/eden_aggregate/ && . commands
 
 # cd /app/npmap-species/backend/maxent && /app/npmap-species/backend/tilemillcode/upload_projects.sh
 

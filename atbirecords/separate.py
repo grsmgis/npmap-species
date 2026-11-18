@@ -1,12 +1,12 @@
 import sys
-import ssl
+#import ssl
 import os
-import re
+#import re
 import csv
-import urllib.request
-import urllib.error
-import urllib.parse
-from os.path import exists
+#import urllib.request
+#import urllib.error
+#import urllib.parse
+#from os.path import exists
 import pandas as pd
 
 
@@ -24,6 +24,8 @@ JUST_COORDS = False
 if 'JUST_COORDS' in sys.argv:
     JUST_COORDS = True
 
+
+"""
 mappings = {
   "Abaeis_nicippe": "169",
   "Abagrotis_alternata": "172",
@@ -896,9 +898,13 @@ mappings = {
   "Zanclognatha_ochreipennis": "41706",
   "Zenaida_macroura": "41807",
 }
+"""
 
+""" 
 gcontext = ssl.SSLContext()
+"""
 
+""" 
 def get_config():
     path = '/app/data/config.txt'
     if exists(path):
@@ -907,7 +913,8 @@ def get_config():
             return list(map(lambda x: x.strip(), f.readlines()))
     else: 
         return list(mappings.keys())
-
+"""
+""" 
 def get_csv(url, renames={}):
     response = urllib.request.urlopen(url, context=gcontext)
     contents = response.read().decode('utf-8')
@@ -916,8 +923,10 @@ def get_csv(url, renames={}):
     def rename(name):
         return renames[name] if name in renames else name
     reader.fieldnames = list(map(rename, reader.fieldnames))
-    return reader
+    return reader 
 
+"""
+""" 
 def write_atbi_file(name, files_dir='./ATBI_files/', count_filename='./ATBI_counts.txt', JUST_COORDS=JUST_COORDS):
     os.makedirs(os.path.dirname(files_dir), exist_ok=True)
 
@@ -945,8 +954,11 @@ def write_atbi_file(name, files_dir='./ATBI_files/', count_filename='./ATBI_coun
 
     if counts >= 30:
         with open(count_filename, 'a+') as count_file:
-            count_file.write(','.join([name, str(counts), speciesID]) + '\n')
+            count_file.write(','.join([str(name), str(counts), str(speciesID)]) + '\n')
+
+"""
         
+""" 
 def separate():
     files_dir = './ATBI_files/'
     os.makedirs(files_dir, exist_ok=True)
@@ -962,10 +974,12 @@ def separate():
         if name not in mappings or name not in configs:
             continue
     
-        write_atbi_file(name)
+        write_atbi_file(name) 
+"""
 
 
-def _separate():
+""" 
+def separate_remote():
     # Create directory for individual species files
     files_dir = 'ATBI_files'
     os.mkdir(files_dir)
@@ -997,6 +1011,7 @@ def _separate():
             f.write(
                 'genus_speciesmaxent,genus_speciesirma,grsm_speciesid,commonname,taxagroup,subjectcategory,lon,lat\n')
             counts = 0
+            words = None
             for sp_line in lines[1:]:
                 words = sp_line.split(',')
                 if float(words[17]) == 0.0 or float(words[16]) == 0.0:
@@ -1008,23 +1023,29 @@ def _separate():
                 else:
                     f.write(','.join(words[41:47] + words[17:15:-1]) + '\n')
             if counts >= 30:
-                count_file.write(name + ',' + str(counts) +
-                                 ',' + words[43] + '\n')
+                count_file.write(name + ',' + str(counts) + ',' + words[43] + '\n') 
+"""
                 
 def separate_local():
     local_atbi_file = '/app/data/atbifile.csv'
+    
+    local_atbi_ids = './ATBI_ids.csv'
+    open(local_atbi_ids).close() # touch
+    
     files_dir = './ATBI_files/'
     os.makedirs(files_dir, exist_ok=True)
-    count_filename='./ATBI_counts.txt'
-    open(count_filename, 'w').close() #touch
     
-    df = pd.read_csv(local_atbi_file)
+    count_filename='./ATBI_counts.txt'
+    open(count_filename, 'w').close() # touch
+    
+    atbi_df = pd.read_csv(local_atbi_file)
+    ids_df = pd.read_csv(local_atbi_ids)
     
     fields = ['genus_speciesmaxent','genus_speciesirma','grsm_speciesid','commonname','taxagroup','lon','lat']
-    if not set(fields).issubset(df.columns.tolist()):
-        raise Exception(f'Error: returned data does not contain the correct fields. \nGot: {",".join(df.columns.tolist())} \nExpected: {",".join(fields)}')
+    if not set(fields).issubset(atbi_df.columns.tolist()):
+        raise Exception(f'Error: returned data does not contain the correct fields. \nGot: {",".join(atbi_df.columns.tolist())} \nExpected: {",".join(fields)}')
     
-    grouped_df = df.groupby('genus_speciesmaxent')
+    grouped_df = atbi_df.groupby('genus_speciesmaxent')
     
     for name, group in grouped_df:
         counts = 0
@@ -1041,10 +1062,15 @@ def separate_local():
                 speciesID = row['grsm_speciesid']
                 r = dict((k, row[k]) for k in useFields)
                 writer.writerow(r)
+                
+        if not (ids_df['genus_speciesmaxent'] == name).any():
+            ids_df = pd.concat([ids_df, pd.DataFrame([{'genus_speciesmaxent': name, 'grsm_speciesid': speciesID}])], ignore_index=True)
 
         if counts >= 30:
             with open(count_filename, 'a+') as count_file:
-                count_file.write(','.join([name, str(counts), str(speciesID)]) + '\n')
+                count_file.write(','.join([str(name), str(counts), str(speciesID)]) + '\n')
+    
+    ids_df.to_csv(local_atbi_ids, index=False)
     
 if __name__ == "__main__":
     #separate()
