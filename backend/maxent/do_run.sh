@@ -79,6 +79,7 @@ export MAXENT_JAR=$MAXENT_JAR
 export ENV_DIR=$ENV_DIR
 export ACCOUNT=$ACCOUNT
 export CV_NUM_FOLDS=$CV_NUM_FOLDS
+export COUNTS_FILE=$COUNTS_FILE
 
 " > maxent.sh
 
@@ -90,7 +91,7 @@ else
 	echo "echo 'Running setup_eden_maxent_cv.sh'" >> maxent.sh
 	echo "$TOOL_DIR/setup_eden_maxent_cv.sh" >> maxent.sh
 	echo "echo -n '#PBS -W depend=afterok:' >> eden_maxent/header.pbs" >> maxent.sh
-	echo "cat $JOBID_FILE | grep nics.utk.edu >> eden_maxent/header.pbs" >> maxent.sh
+	#echo "cat $JOBID_FILE | grep nics.utk.edu >> eden_maxent/header.pbs" >> maxent.sh
 	echo "cat eden_maxent/footer.pbs >> eden_maxent/header.pbs" >> maxent.sh
 
 fi

@@ -17,9 +17,16 @@ i=-1
 while read line; do
    # Skip first line
    if test $i -eq -1; then 
-       i=0
-       continue; fi
+      i=0
+      continue; 
+   fi
    species=$line
+
+   count=$(grep -w $species $COUNTS_FILE | cut -d',' -f2)
+   if test -z "$count"; then
+      continue;
+   fi
+   
    fold=0
    while test $fold -lt $CV_NUM_FOLDS; do
 

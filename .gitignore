@@ -4,3 +4,6 @@ denvercode/full/updateSite.sh
 *.tif.aux.xml
 *.o
 .DS_Store
+
+atbirecords/ATBI_counts.txt
+backend/maxent/*

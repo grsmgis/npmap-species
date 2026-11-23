@@ -14,7 +14,7 @@ outgeos_dir="./geotiffs/out"
 mbtiles_dir="./mbtiles"
 outtile_dir="./mbtiles/out"
 uploadcmnds="./uploadcommands.sh"
-ids_file="/app/npmap-species/atbirecords/ATBI_ids.txt"
+ids_file="/app/npmap-species/atbirecords/ATBI_ids.csv"
 ext="tif"
 ext_mb="mbtiles"
 on_prem_upload="scp -i /root/.ssh/to_mbgov_rsa.pem -o \x22ProxyCommand ssh -i /root/.ssh/to_mbproxy_rsa.pem preston.provins@52.204.73.74 -W %h:%p\x22"
@@ -40,7 +40,7 @@ while read line; do
 		sp=${sp%.tif}
 		color=${sp##*@}
 		species_name=${sp%@*}
-		id=$(printf "%07i" $(grep -iw $species_name $ids_file | cut -d' ' -f2))
+		id=$(printf "%07i" $(grep -iw $species_name $ids_file | cut -d',' -f2))
 		if [ {$species_name:0:3} == "grp" ]; then
 			id="$species_name"
 		fi
@@ -58,7 +58,7 @@ while read line; do
 done <<< $(ls $geotiff_dir)
 
 chmod +x $uploadcmnds
-./$uploadcmnds
+#./$uploadcmnds
 
 
 # on_prem_upload='scp -i /root/.ssh/to_mbgov_rsa.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o \"ProxyCommand ssh -i /root/.ssh/to_mbproxy_rsa.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null preston.provins@52.204.73.74 -W %h:%p\"'

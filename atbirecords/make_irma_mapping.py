@@ -7,11 +7,11 @@ import csv
 
 counts = {}
 encountered = {}
-csvfile = open('ATBI_records.csv', 'rb')
+csvfile = open('atbifile.csv', 'r')
 csvreader = csv.reader(csvfile)
 next(csvreader)
 for line in csvreader:
-    if len(line) != 8:
+    if len(line) != 7:
         sys.stderr.write('error: invalid CSV file\n')
         exit(1)
     else:
